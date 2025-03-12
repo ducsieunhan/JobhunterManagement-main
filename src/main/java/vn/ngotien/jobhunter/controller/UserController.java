@@ -2,6 +2,8 @@ package vn.ngotien.jobhunter.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,32 +24,36 @@ public class UserController {
     this.userService = userService;
   }
 
-  @PostMapping("/user/create")
-  public User createNewUser(@RequestBody User postmanUser) {
+  @PostMapping("/users")
+  public ResponseEntity<User> createNewUser(@RequestBody User postmanUser) {
     User ducUser = this.userService.createNewUser(postmanUser);
-    return ducUser;
+    return ResponseEntity.status(HttpStatus.CREATED).body(ducUser);
   }
 
-  // @DeleteMapping("/user/{id}")
-  // public void deleteUser(@PathVariable("id") long id) {
-  // this.userService.deleteUserById(id);
-  // }
+  @DeleteMapping("/users/{id}")
+  public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+    this.userService.deleteUserById(id);
 
-  @GetMapping("/user/{id}")
-  public User fetchUserById(@PathVariable("id") long id) {
-    return this.userService.getUserById(id);
-
+    return ResponseEntity.status(HttpStatus.OK).body("Successful");
   }
 
-  @GetMapping("/user")
-  public List<User> fetchUserList() {
-    return this.userService.getUserList();
+  @GetMapping("/users/{id}")
+  public ResponseEntity<User> fetchUserById(@PathVariable("id") long id) {
+    User currentUser = this.userService.getUserById(id);
+
+    return ResponseEntity.status(HttpStatus.OK).body(currentUser);
   }
 
-  @PutMapping("/user")
-  public User updateUser(@RequestBody User postmanUser) {
+  @GetMapping("/users")
+  public ResponseEntity<List<User>> fetchUserList() {
+    List<User> usersList = this.userService.getUserList();
+    return ResponseEntity.status(HttpStatus.OK).body(usersList);
+  }
+
+  @PutMapping("/users")
+  public ResponseEntity<User> updateUser(@RequestBody User postmanUser) {
     User ducUser = this.userService.updateUser(postmanUser);
-    return ducUser;
+    return ResponseEntity.status(HttpStatus.OK).body(ducUser);
   }
 
 }
