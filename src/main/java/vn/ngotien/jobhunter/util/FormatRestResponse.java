@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import jakarta.servlet.http.HttpServletResponse;
+import vn.ngotien.jobhunter.domain.ResResponse;
 
 @ControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
@@ -22,8 +23,21 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
   @Override
   public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
       Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+
     HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
-    return body;
+    int status = servletResponse.getStatus();
+
+    ResResponse<Object> res = new ResResponse<>();
+    res.setStatusCode(status);
+
+    if (status >= 400) {
+      return body;
+    } else {
+      res.setData(body);
+      res.setMessage("call api success");
+    }
+
+    return res;
   }
 
 }
