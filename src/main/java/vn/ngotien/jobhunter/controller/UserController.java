@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.ngotien.jobhunter.domain.User;
 import vn.ngotien.jobhunter.service.UserService;
+import vn.ngotien.jobhunter.service.error.IdInvalidException;
 
 @RestController
 public class UserController {
@@ -31,10 +32,13 @@ public class UserController {
   }
 
   @DeleteMapping("/users/{id}")
-  public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
+  public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
+    if (id > 1500) {
+      throw new IdInvalidException("Can not match with any id ");
+    }
     this.userService.deleteUserById(id);
 
-    return ResponseEntity.status(HttpStatus.OK).body("Successful");
+    return ResponseEntity.ok("new user");
   }
 
   @GetMapping("/users/{id}")
