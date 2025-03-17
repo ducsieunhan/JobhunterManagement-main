@@ -10,14 +10,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.ngotien.jobhunter.domain.dto.LoginDTO;
+import vn.ngotien.jobhunter.util.SecurityUtil;
 
 @RestController
 public class AuthController {
 
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
+  private final SecurityUtil securityUtil;
 
-  public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder) {
+  public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
     this.authenticationManagerBuilder = authenticationManagerBuilder;
+    this.securityUtil = securityUtil;
   }
 
   @PostMapping("/login")
@@ -28,6 +31,8 @@ public class AuthController {
     // xác thực người dùng => cần viết hàm loadByUsername
     Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+    // create a token
+    this.securityUtil.createToken(authentication);
     return ResponseEntity.ok().body(loginDTO);
   }
 
