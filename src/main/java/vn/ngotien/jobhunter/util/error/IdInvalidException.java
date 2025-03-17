@@ -1,4 +1,4 @@
-package vn.ngotien.jobhunter.service.error;
+package vn.ngotien.jobhunter.util.error;
 
 public class IdInvalidException extends Exception {
 
