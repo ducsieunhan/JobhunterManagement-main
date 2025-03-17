@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-
+import vn.ngotien.jobhunter.controller.AuthController;
+import vn.ngotien.jobhunter.controller.UserController;
 import vn.ngotien.jobhunter.domain.User;
 import vn.ngotien.jobhunter.repository.UserRepository;
 
 @Service
 public class UserService {
+
   UserRepository userRepository;
 
   public UserService(UserRepository userRepository) {
@@ -44,6 +46,10 @@ public class UserService {
       currentUser.setPassword(user.getPassword());
     }
     return this.userRepository.save(currentUser);
+  }
+
+  public User handleGetUserByUsername(String username) {
+    return this.userRepository.findByEmail(username);
   }
 
 }
