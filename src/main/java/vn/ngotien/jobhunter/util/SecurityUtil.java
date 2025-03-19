@@ -23,12 +23,14 @@ public class SecurityUtil {
 
   public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
+  // phase 2 (next 2.1) : using key from env 2.2
   @Value("${hoidanit.jwt.base64-secret}")
   private String jwtKey;
 
   @Value("${hoidanit.jwt.token-validity-in-seconds}")
   private long jwtExpiration;
 
+  // phase 2 (next 2.3) create Token 2.4
   public String createToken(Authentication authentication) {
     Instant now = Instant.now();
     Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);

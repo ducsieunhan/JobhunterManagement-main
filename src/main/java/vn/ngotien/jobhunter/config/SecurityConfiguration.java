@@ -16,6 +16,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -27,28 +31,56 @@ import vn.ngotien.jobhunter.util.SecurityUtil;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+  // phase 2 (next 2.1) : using key from env 2.2
   @Value("${hoidanit.jwt.base64-secret}")
   private String jwtKey;
 
+  SecurityConfiguration(CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+  }
+
+  // phase 3: Start protecting every endpoint with token
+  // System will automatically extract bearer token form request to server
   @Bean
   public SecurityFilterChain filterChain(
-      HttpSecurity http) throws Exception {
+      HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
 
     http
         .csrf(c -> c.disable())
         .authorizeHttpRequests(
             authz -> authz
-                .requestMatchers("/", "/login").permitAll()
+                .requestMatchers("/", "/login").permitAll() // programmed to using jwt 3.1
                 .anyRequest().authenticated())
         // .anyRequest().permitAll())
-        .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())) // token for authentication for all
-                                                                                 // request
+        .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()) // programmed to using jwt 3.1
+            .authenticationEntryPoint(customAuthenticationEntryPoint)) // token for authentication for all
+        // request
+        .exceptionHandling(
+            exceptions -> exceptions
+                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+
         .formLogin(f -> f.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     return http.build();
   }
 
+  // khi decode thành công
+  @Bean
+  public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+    grantedAuthoritiesConverter.setAuthorityPrefix("");
+    grantedAuthoritiesConverter.setAuthoritiesClaimName("hoidanit");
+
+    JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+    jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+    return jwtAuthenticationConverter;
+  }
+
+  // phase 3 (next 3.1) : Decode JWT and verify user when user have request (3.2)
   @Bean
   public JwtDecoder jwtDecoder() {
     NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
@@ -68,6 +100,7 @@ public class SecurityConfiguration {
     return new BCryptPasswordEncoder();
   }
 
+  // phase 2 (next 2.2): create Key from jwtKey 2.3
   @Bean
   public JwtEncoder jwtEncoder() {
     return new NimbusJwtEncoder(new ImmutableSecret<>(getSecretKey()));

@@ -40,16 +40,15 @@ public class GlobalException {
    *         exception message in the body
    */
   @ExceptionHandler(value = {
-      IdInvalidException.class,
       UsernameNotFoundException.class,
       BadCredentialsException.class
   })
-  public ResponseEntity<ResResponse> handeIdException(IdInvalidException idException) {
+  public ResponseEntity<ResResponse<Object>> handleIdException(Exception ex) {
 
-    ResResponse<Object> res = new ResResponse<>();
+    ResResponse<Object> res = new ResResponse<Object>();
     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-    res.setError(idException.getMessage());
-    res.setMessage("IdInvalidException");
+    res.setError(ex.getMessage());
+    res.setMessage("Exception occurs... ");
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
