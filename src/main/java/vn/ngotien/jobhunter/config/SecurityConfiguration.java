@@ -49,6 +49,7 @@ public class SecurityConfiguration {
 
     http
         .csrf(c -> c.disable())
+        .cors(Customizer.withDefaults())
         .authorizeHttpRequests(
             authz -> authz
                 .requestMatchers("/", "/login").permitAll() // programmed to using jwt 3.1
@@ -57,10 +58,10 @@ public class SecurityConfiguration {
         .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()) // programmed to using jwt 3.1
             .authenticationEntryPoint(customAuthenticationEntryPoint)) // token for authentication for all
         // request
-        .exceptionHandling(
-            exceptions -> exceptions
-                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+        // .exceptionHandling(
+        // exceptions -> exceptions
+        // .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+        // .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
 
         .formLogin(f -> f.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
