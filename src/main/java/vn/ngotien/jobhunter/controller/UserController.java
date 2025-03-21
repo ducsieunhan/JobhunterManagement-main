@@ -1,7 +1,10 @@
 package vn.ngotien.jobhunter.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,9 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.ngotien.jobhunter.domain.User;
+import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.error.IdInvalidException;
 
@@ -54,9 +59,16 @@ public class UserController {
   }
 
   @GetMapping("/users")
-  public ResponseEntity<List<User>> fetchUserList() {
-    List<User> usersList = this.userService.getUserList();
-    return ResponseEntity.status(HttpStatus.OK).body(usersList);
+  public ResponseEntity<ResultPaginationDTO> fetchUserList(
+      @RequestParam("current") Optional<String> currentOptional,
+      @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+    String sCurrent = currentOptional.isPresent() ? currentOptional.get().trim() : "";
+    String sPageSize = pageSizeOptional.isPresent() ? pageSizeOptional.get().trim() : "";
+
+    Pageable pageable = PageRequest.of(Integer.parseInt(sCurrent) - 1, Integer.parseInt(sPageSize));
+
+    ResultPaginationDTO rs = this.userService.getUserList(pageable);
+    return ResponseEntity.status(HttpStatus.OK).body(rs);
   }
 
   @PutMapping("/users")
