@@ -52,4 +52,11 @@ public class Company {
     this.createdAt = Instant.now();
   }
 
+  public void handleBeforeUpdate() {
+    this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? this.updatedBy = SecurityUtil.getCurrentUserLogin().get()
+        : "";
+    this.updatedAt = Instant.now();
+  }
+
 }
