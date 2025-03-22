@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.ngotien.jobhunter.domain.Company;
@@ -41,12 +42,12 @@ public class CompanyService {
     this.companyRepository.deleteById(id);
   }
 
-  public ResultPaginationDTO getCompanies(Pageable pageable) {
-    Page<Company> page = this.companyRepository.findAll(pageable);
+  public ResultPaginationDTO getCompanies(Specification<Company> spec, Pageable pageable) {
+    Page<Company> page = this.companyRepository.findAll(spec, pageable);
     ResultPaginationDTO rs = new ResultPaginationDTO();
     Meta meta = new Meta();
 
-    meta.setPage(page.getNumber());
+    meta.setPage(page.getNumber() + 1);
     meta.setPageSize(page.getSize());
 
     meta.setPages(page.getTotalPages());

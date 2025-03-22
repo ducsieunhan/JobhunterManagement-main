@@ -29,6 +29,7 @@ dependencies {
 	compileOnly("org.projectlombok:lombok:1.18.30")
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("com.turkraft.springfilter:jpa:3.1.7")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }
