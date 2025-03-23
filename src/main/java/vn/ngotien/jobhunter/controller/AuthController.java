@@ -1,5 +1,8 @@
 package vn.ngotien.jobhunter.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -25,6 +28,9 @@ public class AuthController {
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final SecurityUtil securityUtil;
 
+  @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
+  private long refreshTokenExpiration;
+
   public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
       UserService userService) {
     this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -44,7 +50,7 @@ public class AuthController {
 
     // create a token
     // phase 2 (next 2.4) : return token for login user 2.5
-    String access_token = this.securityUtil.createToken(authentication);
+    String access_token = this.securityUtil.createAccessToken(authentication);
     SecurityContextHolder.getContext().setAuthentication(authentication);
     ResLoginDTO res = new ResLoginDTO();
 
@@ -56,7 +62,24 @@ public class AuthController {
     }
 
     res.setAccessToken(access_token);
-    return ResponseEntity.ok().body(res);
+
+    // create refresh token
+    String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getUsername(), res);
+
+    // update user
+    this.userService.updateUserToken(refresh_token, loginDTO.getUsername());
+
+    // set cookies
+    ResponseCookie resCookie = ResponseCookie.from("refresh_token", refresh_token)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(refreshTokenExpiration)
+        .build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, resCookie.toString())
+        .body(res);
   }
 
 }
