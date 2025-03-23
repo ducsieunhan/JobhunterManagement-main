@@ -7,22 +7,29 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.ngotien.jobhunter.domain.User;
 import vn.ngotien.jobhunter.domain.dto.LoginDTO;
 import vn.ngotien.jobhunter.domain.dto.ResLoginDTO;
+import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.SecurityUtil;
 
 @RestController
+@RequestMapping("/api/v1")
 public class AuthController {
 
+  private final UserService userService;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final SecurityUtil securityUtil;
 
-  public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+  public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
+      UserService userService) {
     this.authenticationManagerBuilder = authenticationManagerBuilder;
     this.securityUtil = securityUtil;
+    this.userService = userService;
   }
 
   // phase 1: data for "payload", this is from user data @authenticationToken ->
@@ -40,6 +47,14 @@ public class AuthController {
     String access_token = this.securityUtil.createToken(authentication);
     SecurityContextHolder.getContext().setAuthentication(authentication);
     ResLoginDTO res = new ResLoginDTO();
+
+    User currentUserDB = this.userService.handleGetUserByUsername(loginDTO.getUsername());
+    if (currentUserDB != null) {
+      ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(currentUserDB.getId(), currentUserDB.getEmail(),
+          currentUserDB.getName());
+      res.setUser(userLogin);
+    }
+
     res.setAccessToken(access_token);
     return ResponseEntity.ok().body(res);
   }

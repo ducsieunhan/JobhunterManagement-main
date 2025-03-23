@@ -17,9 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import vn.ngotien.jobhunter.domain.User;
+import vn.ngotien.jobhunter.domain.dto.ResCreateUserDto;
+import vn.ngotien.jobhunter.domain.dto.ResUpdateUserDto;
 import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.ngotien.jobhunter.domain.dto.UserDTO;
 import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.annotation.ApiMessage;
+import vn.ngotien.jobhunter.util.error.EmailInvalidException;
 import vn.ngotien.jobhunter.util.error.IdInvalidException;
 
 @RestController
@@ -35,28 +39,34 @@ public class UserController {
   }
 
   @PostMapping("/users")
-  public ResponseEntity<User> createNewUser(@RequestBody User postmanUser) {
+  @ApiMessage("Create a new user")
+  public ResponseEntity<ResCreateUserDto> createNewUser(@RequestBody User postmanUser) throws EmailInvalidException {
+    if (this.userService.checkExistEmail(postmanUser.getEmail())) {
+      throw new EmailInvalidException("This email already exists!");
+    }
     String hashPassword = passwordEncoder.encode(postmanUser.getPassword());
     postmanUser.setPassword(hashPassword);
-    User ducUser = this.userService.createNewUser(postmanUser);
+    ResCreateUserDto ducUser = this.userService.createUserDTO(postmanUser);
     return ResponseEntity.status(HttpStatus.CREATED).body(ducUser);
   }
 
   @DeleteMapping("/users/{id}")
+  @ApiMessage("Delete user")
   public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
-    if (id > 1500) {
-      throw new IdInvalidException("Can not match with any id ");
+    if (!this.userService.checkExistById(id)) {
+      throw new IdInvalidException("This account is not exist !!");
     }
     this.userService.deleteUserById(id);
-
-    return ResponseEntity.ok("new user");
+    return ResponseEntity.ok("Successfully deleted user ");
   }
 
   @GetMapping("/users/{id}")
-  public ResponseEntity<User> fetchUserById(@PathVariable("id") long id) {
-    User currentUser = this.userService.getUserById(id);
-
-    return ResponseEntity.status(HttpStatus.OK).body(currentUser);
+  @ApiMessage("Get a user")
+  public ResponseEntity<UserDTO> fetchUserById(@PathVariable("id") long id) throws IdInvalidException {
+    if (!this.userService.checkExistById(id)) {
+      throw new IdInvalidException("This account is not exist !!");
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(this.userService.getAUserDTO(id));
   }
 
   @GetMapping("/users")
@@ -69,8 +79,12 @@ public class UserController {
   }
 
   @PutMapping("/users")
-  public ResponseEntity<User> updateUser(@RequestBody User postmanUser) {
-    User ducUser = this.userService.updateUser(postmanUser);
+  @ApiMessage("Update a user")
+  public ResponseEntity<ResUpdateUserDto> updateUser(@RequestBody User postmanUser) throws IdInvalidException {
+    if (!this.userService.checkExistById(postmanUser.getId())) {
+      throw new IdInvalidException("This account is not exist !!");
+    }
+    ResUpdateUserDto ducUser = this.userService.updateUserDTO(postmanUser);
     return ResponseEntity.status(HttpStatus.OK).body(ducUser);
   }
 
