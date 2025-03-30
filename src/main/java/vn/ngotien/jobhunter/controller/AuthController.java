@@ -91,17 +91,20 @@ public class AuthController {
 
   @GetMapping("/auth/account")
   @ApiMessage("Fetch account")
-  public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+  public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
     String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
 
     User currentUserDB = this.userService.handleGetUserByUsername(email);
     ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+    ResLoginDTO.UserGetAccount userGetAccount = new ResLoginDTO.UserGetAccount();
+
     if (currentUserDB != null) {
       userLogin.setEmail(currentUserDB.getEmail());
       userLogin.setId(currentUserDB.getId());
       userLogin.setName(currentUserDB.getName());
+      userGetAccount.setUser(userLogin);
     }
-    return ResponseEntity.ok().body(userLogin);
+    return ResponseEntity.ok().body(userGetAccount);
   }
 
   @GetMapping("/auth/refresh")
@@ -152,6 +155,29 @@ public class AuthController {
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, resCookie.toString())
         .body(res);
+  }
+
+  @GetMapping("/auth/logout")
+  @ApiMessage("Logout user")
+  public ResponseEntity<Void> logout() throws IdInvalidException {
+    String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+    if (email.equals("")) {
+      throw new IdInvalidException("Access token invalid");
+    }
+
+    this.userService.updateUserToken(null, email);
+
+    ResponseCookie resCookie = ResponseCookie.from("refresh_token", null)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(0)
+        .build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, resCookie.toString())
+        .body(null);
   }
 
 }
