@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import vn.ngotien.jobhunter.domain.Company;
 import vn.ngotien.jobhunter.domain.User;
-import vn.ngotien.jobhunter.domain.dto.Meta;
 import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.ngotien.jobhunter.repository.CompanyRepository;
 
@@ -45,7 +44,7 @@ public class CompanyService {
   public ResultPaginationDTO getCompanies(Specification<Company> spec, Pageable pageable) {
     Page<Company> page = this.companyRepository.findAll(spec, pageable);
     ResultPaginationDTO rs = new ResultPaginationDTO();
-    Meta meta = new Meta();
+    ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
     meta.setPage(pageable.getPageNumber() + 1);
     meta.setPageSize(pageable.getPageSize());

@@ -1,4 +1,4 @@
-package vn.ngotien.jobhunter.domain;
+package vn.ngotien.jobhunter.domain.dto;
 
 public class ResResponse<T> {
   private int statusCode;

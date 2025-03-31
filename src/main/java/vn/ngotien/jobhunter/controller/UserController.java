@@ -20,7 +20,7 @@ import vn.ngotien.jobhunter.domain.User;
 import vn.ngotien.jobhunter.domain.dto.ResCreateUserDto;
 import vn.ngotien.jobhunter.domain.dto.ResUpdateUserDto;
 import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
-import vn.ngotien.jobhunter.domain.dto.UserDTO;
+import vn.ngotien.jobhunter.domain.dto.ResUserDTO;
 import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.annotation.ApiMessage;
 import vn.ngotien.jobhunter.util.error.EmailInvalidException;
@@ -62,7 +62,7 @@ public class UserController {
 
   @GetMapping("/users/{id}")
   @ApiMessage("Get a user")
-  public ResponseEntity<UserDTO> fetchUserById(@PathVariable("id") long id) throws IdInvalidException {
+  public ResponseEntity<ResUserDTO> fetchUserById(@PathVariable("id") long id) throws IdInvalidException {
     if (!this.userService.checkExistById(id)) {
       throw new IdInvalidException("This account is not exist !!");
     }

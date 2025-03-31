@@ -1,8 +1,8 @@
-package vn.ngotien.jobhunter.domain.dto;
+package vn.ngotien.jobhunter.domain.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginDTO {
+public class ReqLoginDTO {
   @NotBlank(message = "Username can not be empty")
   private String username;
 

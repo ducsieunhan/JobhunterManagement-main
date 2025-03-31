@@ -1,4 +1,4 @@
-package vn.ngotien.jobhunter.service;
+package vn.ngotien.jobhunter.config;
 
 import java.util.Collections;
 
@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import vn.ngotien.jobhunter.controller.AuthController;
+import vn.ngotien.jobhunter.service.UserService;
 
 // ke thua cho authentication 
 @Component("userDetailsService")

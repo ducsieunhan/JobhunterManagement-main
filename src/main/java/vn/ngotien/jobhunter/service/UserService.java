@@ -9,11 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.ngotien.jobhunter.domain.User;
-import vn.ngotien.jobhunter.domain.dto.Meta;
 import vn.ngotien.jobhunter.domain.dto.ResCreateUserDto;
 import vn.ngotien.jobhunter.domain.dto.ResUpdateUserDto;
 import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
-import vn.ngotien.jobhunter.domain.dto.UserDTO;
+import vn.ngotien.jobhunter.domain.dto.ResUserDTO;
 import vn.ngotien.jobhunter.repository.UserRepository;
 
 @Service
@@ -52,7 +51,7 @@ public class UserService {
   public ResultPaginationDTO getUserList(Specification<User> spec, Pageable pageable) {
     Page<User> pageUser = this.userRepository.findAll(spec, pageable);
     ResultPaginationDTO rs = new ResultPaginationDTO();
-    Meta mt = new Meta();
+    ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
     mt.setPage(pageUser.getNumber() + 1);
     mt.setPageSize(pageUser.getSize());
@@ -61,10 +60,10 @@ public class UserService {
     mt.setTotal(pageUser.getTotalElements());
 
     rs.setMeta(mt);
-    List<UserDTO> userDTOs = new ArrayList<>();
+    List<ResUserDTO> userDTOs = new ArrayList<>();
 
     for (User user : pageUser) {
-      UserDTO newUser = this.userToDTO(user);
+      ResUserDTO newUser = this.userToDTO(user);
       userDTOs.add(newUser);
     }
     rs.setResult(userDTOs);
@@ -100,13 +99,13 @@ public class UserService {
         newUser.getAddress(), newUser.getUpdatedAt());
   }
 
-  public UserDTO getAUserDTO(long id) {
+  public ResUserDTO getAUserDTO(long id) {
     User user = this.getUserById(id);
     return userToDTO(user);
   }
 
-  public UserDTO userToDTO(User user) {
-    UserDTO newUserDTO = new UserDTO();
+  public ResUserDTO userToDTO(User user) {
+    ResUserDTO newUserDTO = new ResUserDTO();
     newUserDTO.setEmail(user.getEmail());
     newUserDTO.setName(user.getName());
     newUserDTO.setAddress(user.getAddress());

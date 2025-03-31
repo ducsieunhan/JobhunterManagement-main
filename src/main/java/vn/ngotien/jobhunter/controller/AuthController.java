@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.ngotien.jobhunter.domain.User;
-import vn.ngotien.jobhunter.domain.dto.LoginDTO;
 import vn.ngotien.jobhunter.domain.dto.ResLoginDTO;
+import vn.ngotien.jobhunter.domain.request.ReqLoginDTO;
 import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.SecurityUtil;
 import vn.ngotien.jobhunter.util.annotation.ApiMessage;
@@ -46,7 +46,7 @@ public class AuthController {
   // phase 1: data for "payload", this is from user data @authenticationToken ->
   // @authentication 1.1
   @PostMapping("/auth/login")
-  public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+  public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
     // Nạp input vào security
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
         loginDTO.getUsername(), loginDTO.getPassword());
