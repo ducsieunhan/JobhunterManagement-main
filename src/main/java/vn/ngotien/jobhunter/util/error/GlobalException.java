@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import vn.ngotien.jobhunter.domain.dto.ResResponse;
+import vn.ngotien.jobhunter.domain.response.ResResponse;
 
 /**
  * GlobalException class is a centralized exception handler for the application.

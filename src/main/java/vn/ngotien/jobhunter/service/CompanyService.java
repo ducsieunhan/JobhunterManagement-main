@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import vn.ngotien.jobhunter.domain.Company;
 import vn.ngotien.jobhunter.domain.User;
-import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.ngotien.jobhunter.domain.response.ResultPaginationDTO;
 import vn.ngotien.jobhunter.repository.CompanyRepository;
 
 @Service

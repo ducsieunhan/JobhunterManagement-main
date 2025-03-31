@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import vn.ngotien.jobhunter.domain.User;
-import vn.ngotien.jobhunter.domain.dto.ResCreateUserDto;
-import vn.ngotien.jobhunter.domain.dto.ResUpdateUserDto;
-import vn.ngotien.jobhunter.domain.dto.ResultPaginationDTO;
-import vn.ngotien.jobhunter.domain.dto.ResUserDTO;
+import vn.ngotien.jobhunter.domain.response.ResCreateUserDto;
+import vn.ngotien.jobhunter.domain.response.ResUpdateUserDto;
+import vn.ngotien.jobhunter.domain.response.ResUserDTO;
+import vn.ngotien.jobhunter.domain.response.ResultPaginationDTO;
 import vn.ngotien.jobhunter.service.UserService;
 import vn.ngotien.jobhunter.util.annotation.ApiMessage;
 import vn.ngotien.jobhunter.util.error.EmailInvalidException;
